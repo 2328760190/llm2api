@@ -1,6 +1,6 @@
 # LLM2 API 项目
 
-## 简介
+## 简介 未完待续...readme没空写
 
 LLM2 API 是一个强大的 AI 聊天接口，为开发者提供了简单易用的方式来集成先进的语言模型功能。本项目封装了复杂的后端逻辑，让您可以专注于应用开发，而无需担心底层实现细节。
 
@@ -27,5 +27,3 @@ docker run -d --name llm2api \
   -p <host_port>:9999 \
   -v /path/to/host/cookie.txt:/cookie.txt \
   chb2024/llm2api:2.0.0
-
-未完待续...readme没空写
