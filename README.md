@@ -1,3 +1,5 @@
+# LLM2 API 项目
+
 ## 简介
 
 LLM2 API 是一个强大的 AI 聊天接口，为开发者提供了简单易用的方式来集成先进的语言模型功能。本项目封装了复杂的后端逻辑，让您可以专注于应用开发，而无需担心底层实现细节。
@@ -13,8 +15,8 @@ LLM2 API 是一个强大的 AI 聊天接口，为开发者提供了简单易用�
 - [x] Cookie 管理和验证
 - [x] 定期 Cookie 检查
 - [x] 仪表板用于监控服务状态
+- [x] 联网搜索功能
 - [ ] 图片和文件识别（开发中）
-- [ ] 联网搜索功能（计划中）
 
 ## 已实现功能详情
 
@@ -36,6 +38,8 @@ LLM2 API 是一个强大的 AI 聊天接口，为开发者提供了简单易用�
 
 9. **监控仪表板**：提供了直观的 Web 界面，实时展示系统状态和性能指标。
 
+10. **联网搜索功能**：集成了 SearXNG 搜索引擎，支持实时网络搜索并将结果整合到 AI 响应中。(所有搜索结果会放在<search></search>中，不占用上下文，默认在/web端点运用>)
+
 ## 快速开始
 
 ### 前提条件
@@ -45,23 +49,37 @@ LLM2 API 是一个强大的 AI 聊天接口，为开发者提供了简单易用�
 
 ### 部署
 
-使用以下命令启动 LLM2 API 容器：
+使用以下命令快速启动 LLM2 API 容器：
 
 ```bash
 docker run -d --name llm2api \
-  -p <host_port>:9999 \
-  -e AUTH_CODE=your_auth_code \
-  chb2024/llm2api:2.0.0
+-p <host_port>:9999 \
+-e AUTH_CODE=your_auth_code \
+chb2024/llm2api:2.0.0
 ```
-
 将 `<host_port>` 替换为您希望使用的主机端口，`your_auth_code` 替换为您的授权码。
+
+### 完整的环境变量配置示例
+
+```shellscript
+docker run -d --name llm2api \
+-p <host_port>:9999 \
+-e AUTH_CODE=your_auth_code \
+-e API_KEY=your_api_key \
+-e API_PATH=custom_path \
+-e SEARXNG_URL=https://sousuo.emoe.top \
+-e TOOL_ALL_IN_ONE=false \
+chb2024/llm2api:2.0.0
+```
 
 ### 环境变量
 
 - `AUTH_CODE`: 授权码（必需）
 - `API_KEY`: 用于验证 API 请求的密钥（可选）
 - `API_PATH`: 自定义 API 路径前缀（可选）
-- `CHECK_INTERVAL`: Cookie 检查间隔（分钟），默认为 0（不进行定期检查）（可选）
+- `SEARXNG_URL`: SearXNG 搜索引擎的 URL（可选，默认为 [https://sousuo.emoe.top）](https://sousuo.emoe.top）)
+- `TOOL_ALL_IN_ONE`: 是否在所有 `/v1/chat/completions` 请求中启用搜索功能（可选，默认为 false）
+
 
 ## API 端点
 
@@ -179,11 +197,38 @@ print(response.json())
 
 便捷添加cookie，基于端点5
 
+### 7. 联网搜索聊天完成 `/web/v1/chat/completions`
+
+此端点提供了集成网络搜索功能的聊天完成服务。它的使用方式与标准的 `/v1/chat/completions` 端点相同，但会自动执行网络搜索并将结果整合到 AI 的响应中。
+
+```python
+import requests
+import json
+
+url = "http://your_server:port/web/v1/chat/completions"
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer your_api_key"
+}
+data = {
+    "model": "meta-llama/Meta-Llama-3.1-70B-Instruct",
+    "messages": [
+        {"role": "user", "content": "最近的世界新闻有哪些？"}
+    ]
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+注意：此端点始终启用网络搜索功能，不受 `TOOL_ALL_IN_ONE` 环境变量的影响。
+
 ## 获取授权
 
 - 授权码查询和获取：请访问 [auth.464888.xyz](https://auth.464888.xyz)
-- 非商业用途：请联系 hello@464888.xyz，可免费获得授权码和必要资源
+- 非商业用途：请联系 [hello@464888.xyz](mailto:hello@464888.xyz)，可免费获得授权码和必要资源
 - 商业或大量使用：请访问我们的 [商业授权商店](#) (即将上线)
+
 
 ## 如何贡献
 
@@ -194,6 +239,7 @@ print(response.json())
 3. 分享您基于 LLM2 API 开发的应用
 4. 在社交媒体上分享本项目
 
+
 如果您觉得本项目对您有帮助，欢迎给我们 Star！您的支持是我们持续改进的动力。
 
 ## 注意事项
@@ -202,14 +248,16 @@ print(response.json())
 - 本项目仅提供 Docker 镜像，不公开源代码。
 - 如遇到任何问题或需要支持，请联系项目维护者。
 
+
 ## 许可证
 
 本项目采用专有许可证。未经明确授权，不得使用、修改或分发本软件。
 
 ## 联系我们
 
-- 技术支持：support@464888.xyz
-- 商务合作：business@464888.xyz
+- 技术支持：[support@464888.xyz](mailto:support@464888.xyz)
+- 商务合作：[business@464888.xyz](mailto:business@464888.xyz)
 - 官方网站：[暂无](https://github.com/2328760190/llm2api)
+
 
 感谢您使用 LLM2 API！我们期待看到您基于本项目开发的创新应用。
